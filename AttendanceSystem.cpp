@@ -48,6 +48,7 @@ void AttendanceSystem::markAttendance(const std::string& id, int hours) {
     if (emp) {
         emp->total_hours += hours;
     } 
+    saveToFile();
 }
 
 Employee* AttendanceSystem::findEmployee(const std::string& id) {
@@ -68,7 +69,7 @@ void AttendanceSystem::processLeaveApplication(const std::string& id, Leave& lea
 
 void AttendanceSystem::showLowAttendance(float minPercentage) {
     for (const auto& emp : employees) {
-        float attendancePercentage = (emp.total_hours / 40.0f) * 100;
+        float attendancePercentage = (emp.total_hours / (40.0f * 4)) * 100;
         if (attendancePercentage < minPercentage) {
             std::cout << "Employee ID: " << emp.id << ", Name: " << emp.name << ", Attendance: " << attendancePercentage << "%\n";
         }
