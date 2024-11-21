@@ -1,57 +1,53 @@
-#ifndef ATTENDANCE_SYSTEM_H
-#define ATTENDANCE_SYSTEM_H
+#ifndef ATTENDANCESYSTEM_H
+#define ATTENDANCESYSTEM_H
 
 #include <iostream>
-#include <string>
 #include <vector>
+#include <string>
 #include <fstream>
-#include <ctime>
-#include <iomanip>
-
-using namespace std;
+#include <sstream>
 
 struct Leave {
-    string type; // Casual, Earned, Official, Unpaid
-    string from_date;
-    string to_date;
-    string reason;
-    string status; // Pending, Approved, Rejected
-    string application_date;
-    string approval_date;
+    std::string type;
+    std::string from_date;
+    std::string to_date;
+    std::string reason;
+    std::string status;
+    std::string date_of_application;
+    std::string date_of_approval;
 };
 
-class Employee {
-public:
-    string name;
-    string id;
-    int casual_leave_balance = 15;
-    int earned_leave_balance = 21;
-    int attendance_hours = 0; // Total attendance hours
-    vector<Leave> leave_history;
+struct Employee {
+    std::string name;
+    std::string id;
+    int total_hours;
+    int casual_leaves;
+    int earned_leaves;
+    std::vector<Leave> leave_history;
 
-    Employee(string n, string i);
-    void markAttendance(int hours);
-    void applyLeave(const Leave& leave);
-    void updateLeaveBalance(const string& type, int days);
-
-    void saveToFile();
-    static Employee loadFromFile(const string& id);
+    Employee(const std::string& name, const std::string& id)
+        : name(name), id(id), total_hours(0), casual_leaves(15), earned_leaves(21) {}
 };
 
 class AttendanceSystem {
+private:
+    std::vector<Employee> employees;
+
+    void loadFromFile();
+    void saveToFile();
+
 public:
-    vector<Employee> employees;
+    AttendanceSystem();
+    ~AttendanceSystem();
 
-    void addEmployee(const string& name, const string& id);
-    void markAttendance(const string& id, int hours);
-    void processLeaveApplication(const string& id, Leave& leave, const string& approver, bool approve);
-
-    void showLowAttendance(float percentage);
+    void addEmployee(const std::string& name, const std::string& id);
+    void markAttendance(const std::string& id, int hours);
+    Employee* findEmployee(const std::string& id);
+    void processLeaveApplication(const std::string& id, Leave& leave, const std::string& approver, bool approve);
+    void showLowAttendance(float minPercentage);
     void showPendingLeaves();
-    void showEmployeeAttendance(const string& id);
-    void showEmployeeLeaves(const string& id);
-    Employee* findEmployee(const string& id);
-
+    void showEmployeeAttendance(const std::string& id);
+    void showEmployeeLeaves(const std::string& id);
 };
 
-#endif
+#endif // ATTENDANCESYSTEM_H

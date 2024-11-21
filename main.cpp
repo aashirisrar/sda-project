@@ -1,17 +1,17 @@
 #include "AttendanceSystem.h"
+#include <iostream>
 
 void displayMenu() {
-    cout << "\n=== Attendance and Leave Management System ===\n";
-    cout << "1. Add Employee\n";
-    cout << "2. Mark Attendance\n";
-    cout << "3. Apply Leave\n";
-    cout << "4. Process Leave Application\n";
-    cout << "5. Show Employees with Low Attendance\n";
-    cout << "6. Show Pending Leaves\n";
-    cout << "7. Show Employee Attendance\n";
-    cout << "8. Show Employee Leave Details\n";
-    cout << "0. Exit\n";
-    cout << "Enter your choice: ";
+    std::cout << "\n--- Attendance and Leave Management System ---\n";
+    std::cout << "1. Add Employee\n";
+    std::cout << "2. Mark Attendance\n";
+    std::cout << "3. Apply for Leave\n";
+    std::cout << "4. Show Low Attendance Employees\n";
+    std::cout << "5. Show Pending Leave Applications\n";
+    std::cout << "6. Show Employee Attendance\n";
+    std::cout << "7. Show Employee Leaves\n";
+    std::cout << "0. Exit\n";
+    std::cout << "Enter your choice: ";
 }
 
 int main() {
@@ -20,115 +20,85 @@ int main() {
 
     do {
         displayMenu();
-        cin >> choice;
-        cin.ignore(); // To handle newline characters in the input buffer
+        std::cin >> choice;
+        std::cin.ignore(); // Clear input buffer
 
         switch (choice) {
-            case 1: {
-                string name, id;
-                cout << "Enter employee name: ";
-                getline(cin, name);
-                cout << "Enter employee ID: ";
-                getline(cin, id);
-                system.addEmployee(name, id);
-                cout << "Employee added successfully.\n";
-                break;
-            }
-
-            case 2: {
-                string id;
-                int hours;
-                cout << "Enter employee ID: ";
-                getline(cin, id);
-                cout << "Enter hours worked: ";
-                cin >> hours;
-                system.markAttendance(id, hours);
-                cout << "Attendance marked successfully.\n";
-                break;
-            }
-
-            case 3: {
-                string id, type, from_date, to_date, reason;
-                cout << "Enter employee ID: ";
-                getline(cin, id);
-                cout << "Enter leave type (Casual/Earned/Official/Unpaid): ";
-                getline(cin, type);
-                cout << "Enter leave start date (DD-MM-YYYY): ";
-                getline(cin, from_date);
-                cout << "Enter leave end date (DD-MM-YYYY): ";
-                getline(cin, to_date);
-                cout << "Enter reason for leave: ";
-                getline(cin, reason);
-
-                Leave leave = {type, from_date, to_date, reason, "Pending", __DATE__, ""};
-                Employee* emp = system.findEmployee(id);
-                if (emp) {
-                    emp->applyLeave(leave);
-                    cout << "Leave application submitted successfully.\n";
-                } else {
-                    cout << "Employee not found.\n";
-                }
-                break;
-            }
-
-            case 4: {
-                string id, approver;
-                bool approve;
-                cout << "Enter employee ID: ";
-                getline(cin, id);
-                cout << "Enter approver name: ";
-                getline(cin, approver);
-                cout << "Approve leave? (1 for Yes, 0 for No): ";
-                cin >> approve;
-
-                Employee* emp = system.findEmployee(id);
-                if (emp && !emp->leave_history.empty()) {
-                    Leave& leave = emp->leave_history.back(); // Process the most recent leave
-                    system.processLeaveApplication(id, leave, approver, approve);
-                    cout << (approve ? "Leave approved.\n" : "Leave rejected.\n");
-                } else {
-                    cout << "Employee or leave application not found.\n";
-                }
-                break;
-            }
-
-            case 5: {
-                float percentage;
-                cout << "Enter minimum attendance percentage: ";
-                cin >> percentage;
-                system.showLowAttendance(percentage);
-                break;
-            }
-
-            case 6: {
-                system.showPendingLeaves();
-                break;
-            }
-
-            case 7: {
-                string id;
-                cout << "Enter employee ID: ";
-                getline(cin, id);
-                system.showEmployeeAttendance(id);
-                break;
-            }
-
-            case 8: {
-                string id;
-                cout << "Enter employee ID: ";
-                getline(cin, id);
-                system.showEmployeeLeaves(id);
-                break;
-            }
-
-            case 0:
-                cout << "Exiting the system. Goodbye!\n";
-                break;
-
-            default:
-                cout << "Invalid choice. Please try again.\n";
-                break;
+        case 1: {
+            std::string name, id;
+            std::cout << "Enter Employee Name: ";
+            std::getline(std::cin, name);
+            std::cout << "Enter Employee ID: ";
+            std::getline(std::cin, id);
+            system.addEmployee(name, id);
+            std::cout << "Employee added successfully!\n";
+            break;
         }
+        case 2: {
+            std::string id;
+            int hours;
+            std::cout << "Enter Employee ID: ";
+            std::getline(std::cin, id);
+            if(!system.findEmployee(id)) {
+                std::cout<<"Error! No Employee found with this ID!\n";
+                break;
+            }
+            std::cout << "Enter Hours Worked: ";
+            std::cin >> hours;
+            system.markAttendance(id, hours);
+            std::cout << "Attendance marked successfully!\n";
+            break;
+        }
+        case 3: {
+            std::string id, type, from_date, to_date, reason;
+            std::cout << "Enter Employee ID: ";
+            std::getline(std::cin, id);
+            std::cout << "Enter Leave Type (Casual/Earned/Official/Unpaid): ";
+            std::getline(std::cin, type);
+            std::cout << "Enter From Date (DD-MM-YYYY): ";
+            std::getline(std::cin, from_date);
+            std::cout << "Enter To Date (DD-MM-YYYY): ";
+            std::getline(std::cin, to_date);
+            std::cout << "Enter Reason for Leave: ";
+            std::getline(std::cin, reason);
+
+            Leave leave = {type, from_date, to_date, reason, "Pending", __DATE__, ""};
+            system.processLeaveApplication(id, leave, "Supervisor", false);
+            std::cout << "Leave application submitted successfully!\n";
+            break;
+        }
+        case 4: {
+            float minPercentage;
+            std::cout << "Enter Minimum Attendance Percentage: ";
+            std::cin >> minPercentage;
+            system.showLowAttendance(minPercentage);
+            break;
+        }
+        case 5: {
+            system.showPendingLeaves();
+            break;
+        }
+        case 6: {
+            std::string id;
+            std::cout << "Enter Employee ID: ";
+            std::getline(std::cin, id);
+            system.showEmployeeAttendance(id);
+            break;
+        }
+        case 7: {
+            std::string id;
+            std::cout << "Enter Employee ID: ";
+            std::getline(std::cin, id);
+            system.showEmployeeLeaves(id);
+            break;
+        }
+        case 0:
+            std::cout << "Exiting the system. Goodbye!\n";
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again.\n";
+        }
+
     } while (choice != 0);
 
     return 0;
