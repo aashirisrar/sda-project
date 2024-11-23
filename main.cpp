@@ -63,7 +63,7 @@ int main() {
             std::getline(std::cin, reason);
 
             Leave leave = {type, from_date, to_date, reason, "Pending", __DATE__, ""};
-            system.processLeaveApplication(id, leave, "Supervisor", false);
+            system.processLeaveApplication(id, leave, "Supervisor", true);
             std::cout << "Leave application submitted successfully!\n";
             break;
         }
